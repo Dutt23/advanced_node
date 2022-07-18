@@ -4,13 +4,19 @@ const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const keys = require('./config/keys');
+var cors = require('cors');
 
 require('./models/User');
 require('./models/Blog');
 require('./services/passport');
 
+
 mongoose.Promise = global.Promise;
-mongoose.connect(keys.mongoURI, { useMongoClient: true });
+mongoose.connect(keys.mongoURI, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true
+});
 
 const app = express();
 
@@ -23,7 +29,9 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(cors({
+  origin: '*'
+}));
 require('./routes/authRoutes')(app);
 require('./routes/blogRoutes')(app);
 
